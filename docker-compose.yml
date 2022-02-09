@@ -1,0 +1,54 @@
+version: "3.7"
+services:
+  envoytun:
+    privileged: true
+    build:
+      context: ./envoytun
+      dockerfile: Dockerfile
+    deploy:
+      replicas: 1
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    #ports:
+    #  - "10000:10000"
+    #  - "10001:10001"
+    #  - "10002:10002"
+    #  - "10003:10003" 
+    #  - "11000:11000"
+    devices:
+      - "/dev/net/tun:/dev/net/tun"
+    volumes:
+      - "./wg0.conf:/etc/wireguard/wg0.conf"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "400k"
+        max-file: "20"
+    environment:
+      INTERFACE_NAME: "wg0"
+      WG_SUDO: "1"
+      WG_QUICK_USERSPACE_IMPLEMENTATION: "/app/boringtun"
+    entrypoint: /bin/bash
+    command: -c "./envoytun.sh && sleep infinity"
+  web1:
+    build:
+      context: ./web1
+      dockerfile: "./docker/dynamic.Dockerfile"
+    restart: always
+    volumes:
+      - "./web1/:/code"
+    ports:
+      - "8081:5000"
+  web2:
+    build:
+      context: ./web2
+      dockerfile: "./docker/dynamic.Dockerfile"
+    restart: always
+    volumes:
+      - "./web2/:/code"
+    ports:
+      - "8082:5000"
+  redis:
+    image: "redis:alpine"
+    
