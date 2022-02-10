@@ -2,7 +2,7 @@
 #sysinfo=$(docker exec -it 9f93cdb1c2f9 curl -s http://10.0.0.7:10000/getinfo | jq '.')
 #hits=$(docker exec -it 9f93cdb1c2f9 curl -s http://10.0.0.7:10000/getinfo | jq '.')
 
-container=envoytun_envoytun_1
+container=envoytun-envoytun-1
 containers_all=$(docker ps -a -q)
 
 init(){
